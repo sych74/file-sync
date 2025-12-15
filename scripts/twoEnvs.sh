@@ -5,11 +5,12 @@ if [ -n "${EXT_IP}" ];
 then
 settingsPath=$2
 lsyncdPath=$3
+delayValue=${4:-10}
 grep -q "@"${EXT_IP}"/" ${lsyncdPath}/lsyncd/etc/lsyncd.conf || echo "sync {
 		default.rsync,
 		source=\"${lsyncdPath}${settingsPath}\",
                 target=\"rsync://admin@"${EXT_IP}"/syncmodule\",
-		delay=10,
+		delay=${delayValue},
                 delete='running',
 		exclude = {
 		  \"lsyncd/\",
