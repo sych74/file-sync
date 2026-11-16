@@ -29,7 +29,6 @@ var NODE_GROUP_STORAGE = "storage",
     parsed,
     syncPaths,
     syncTargets,
-    isLegacyPath = false,
     nodes,
     env,
     i,
@@ -47,7 +46,6 @@ if (secondAddress.indexOf("{settings.address}") != -1) {
 // The multi-line value is never put into this source: a line break inside
 // a string literal would be a syntax error.
 if (rawPaths === null || rawPaths === undefined) {
-    isLegacyPath = true;
     rawPaths = "${settings.path}";
 
     if (rawPaths.indexOf("{settings.path}") != -1) {
@@ -67,10 +65,10 @@ if (!/^\d+$/.test(delay)) {
 
 // Parses sync paths separated by line breaks or commas into paths relative to basePath
 // without leading and trailing slashes; "" stands for basePath itself.
-// An absolute path must be inside basePath, unless isLegacy is set: older versions
-// of the add-on treated "/ROOT" as relative to basePath, installed add-ons keep that.
+// A path that starts with basePath is cut to the relative part, any other leading
+// slash is ignored: "/ROOT/uploads" means ROOT/uploads in basePath, as in older versions.
 // Returns { paths: [...] } or { error: "..." }.
-function parseSyncPaths(raw, basePath, isLegacy) {
+function parseSyncPaths(raw, basePath) {
     var base = String(basePath).replace(/\/+$/, ""),
         items = String(raw).split(/[,\r\n]+/),
         paths = [],
@@ -83,8 +81,6 @@ function parseSyncPaths(raw, basePath, isLegacy) {
 
         if (p == base || p.indexOf(base + "/") == 0) {
             p = p.substring(base.length);
-        } else if (!isLegacy && /^\/+[^\/]/.test(p)) {
-            return { error: "Sync path must be relative to " + base + " or start with " + base + "/: " + items[i] };
         }
         p = p.replace(/\/+/g, "/").replace(/^\/|\/$/g, "");
 
@@ -149,7 +145,7 @@ if (!lsyncdPath) {
     lsyncdPath = isStorageNode ? "/data/" : "${SERVER_WEBROOT}/";
 }
 
-parsed = parseSyncPaths(rawPaths, lsyncdPath, isLegacyPath);
+parsed = parseSyncPaths(rawPaths, lsyncdPath);
 
 if (parsed.error) {
     return { result: 99, error: parsed.error };
