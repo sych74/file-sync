@@ -55,11 +55,13 @@ settings:
         type: text
         height: 60
         required: false
+        tooltip: "Directories to synchronize, one per line, relative to the webroot (for example, ROOT/uploads) or to /data on storage nodes. Paths must not be nested in each other. Leave empty to synchronize the whole webroot or /data."
       - default: '10'
         name: delay
         caption: Sync delay (sec)
         type: string
         required: false
+        tooltip: "Seconds lsyncd collects file changes before sending them to the other nodes."
       two_envs:
       - placeholder: One path per line, relative to the webroot for cp layer or /data for storage. Empty to sync the whole directory.
         name: paths
@@ -67,19 +69,23 @@ settings:
         type: text
         height: 60
         required: false
+        tooltip: "Directories to synchronize, one per line, relative to the webroot (for example, ROOT/uploads) or to /data on storage nodes. Paths must not be nested in each other. Leave empty to synchronize the whole webroot or /data."
       - default: '10'
         name: delay
         caption: Sync delay (sec)
         type: string
         required: false
+        tooltip: "Seconds lsyncd collects file changes before sending them to the other nodes."
       - placeholder: optional
         name: address
         caption: IP second environment
         type: string
+        tooltip: "IP address of any node of the second environment. Specify the same sync paths in the same order there."
       - placeholder: optional
         name: password
         caption: Password
         type: string
+        tooltip: "Password of the rsync daemon. Use the same password in both environments."
     type: radio-fieldset
 
 onAfterCloneNodes: installRsyncDaemon
