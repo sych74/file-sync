@@ -8,6 +8,8 @@
 #   conf - writes <baseDir>lsyncd/etc/rsync.conf and <baseDir>lsyncd/etc/lsyncd.conf
 #   dirs - creates the lsyncd_tmp directory in every synced directory
 #
+# Exits with a non-zero code if the configuration cannot be written.
+#
 # baseDir     - webroot of the node (or /data for storage), the add-on lives in <baseDir>lsyncd/
 # syncPaths   - comma-separated paths relative to baseDir, "/" or an empty value means baseDir itself
 # syncTargets - comma-separated hosts that receive the changes of this node:
@@ -127,9 +129,6 @@ build_dirs() {
     for i in "${!paths[@]}"; do
         mkdir -p "$(source_dir "${paths[$i]}")lsyncd_tmp"
     done
-    # Kept for compatibility with older versions, points to the first path as before.
-    rm -rf /tmp/lsyncd_tmp
-    ln -s "$(source_dir "${paths[0]}")lsyncd_tmp/" /tmp/
 }
 
 case "$ACTION" in

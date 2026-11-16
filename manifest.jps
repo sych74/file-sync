@@ -136,13 +136,13 @@ actions:
       curl -fsS "${baseUrl}scripts/init.sh" -o ${this.lsyncdPath}lsyncd/init.sh
       sed -i "s|_INSTALL_DIRECTORY|${this.lsyncdPath}lsyncd/|g" ${this.lsyncdPath}lsyncd/init.sh
       bash ${this.lsyncdPath}lsyncd/init.sh pause 2>&1
-      curl -fsS "${baseUrl}scripts/buildConf.sh" -o ${this.lsyncdPath}lsyncd/buildConf.sh
-      bash ${this.lsyncdPath}lsyncd/buildConf.sh conf "${this.lsyncdPath}" "${this.syncPaths}" "${this.syncTargets}" "${this.delay}" "${this.user}" 2>&1
+      curl -fsS "${baseUrl}scripts/buildConf.sh" -o ${this.lsyncdPath}lsyncd/buildConf.sh 2>&1 || { echo "Failed to download buildConf.sh"; exit 1; }
+      bash ${this.lsyncdPath}lsyncd/buildConf.sh conf "${this.lsyncdPath}" "${this.syncPaths}" "${this.syncTargets}" "${this.delay}" "${this.user}" 2>&1 || { echo "Failed to generate the sync configuration"; exit 1; }
       curl "${baseUrl}scripts/checkROOTZDT.sh" -o  ${this.lsyncdPath}/zdt.sh 2>&1
       bash ${this.lsyncdPath}zdt.sh ${this.lsyncdPath} 2>&1
       rm ${this.lsyncdPath}zdt.sh
       rm -rf ${this.lsyncdPath}lsyncd_tmp
-      bash ${this.lsyncdPath}lsyncd/buildConf.sh dirs "${this.lsyncdPath}" "${this.syncPaths}" 2>&1
+      bash ${this.lsyncdPath}lsyncd/buildConf.sh dirs "${this.lsyncdPath}" "${this.syncPaths}" 2>&1 || { echo "Failed to create the sync directories"; exit 1; }
   - cmd [${this.nodeId}]: |-
       cd ${this.lsyncdPath}lsyncd/
       chmod 600 etc/rsyncd.pass etc/rsyncd.secrets
