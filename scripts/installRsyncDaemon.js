@@ -1,3 +1,7 @@
+// Reads the sync paths, one per line, from the syncPaths parameter (the "paths" setting).
+// Installed add-ons with an older manifest call this script without parameters,
+// then the single-line "path" setting of that manifest is used.
+//
 // Passes to the installLsync action of every node:
 // @settingsPath - the first sync path, used by installLsync of older manifests
 // @syncPaths - comma-separated sync paths relative to lsyncdPath, "/" is lsyncdPath itself
@@ -13,7 +17,7 @@ var NODE_GROUP_STORAGE = "storage",
     USER = "jelastic",
     syncPassword = "${settings.password}",
     secondAddress = "${settings.address}",
-    rawPaths = "${settings.path}",
+    rawPaths = getParam("syncPaths"),
     delay = "${settings.delay}",
     isStorageNode = false,
     envLsyncdNodes = [],
@@ -38,7 +42,19 @@ if (secondAddress.indexOf("{settings.address}") != -1) {
     secondAddress = "";
 }
 
-if (rawPaths.indexOf("{settings.path}") != -1) {
+// The multi-line value is never put into this source: a line break inside
+// a string literal would be a syntax error.
+if (rawPaths === null || rawPaths === undefined) {
+    rawPaths = "${settings.path}";
+
+    if (rawPaths.indexOf("{settings.path}") != -1) {
+        rawPaths = "";
+    }
+}
+
+rawPaths = String(rawPaths);
+
+if (rawPaths.indexOf("{settings.paths}") != -1) {
     rawPaths = "";
 }
 
@@ -46,12 +62,12 @@ if (!/^\d+$/.test(delay)) {
     delay = "10";
 }
 
-// Parses a comma-separated list of sync paths into paths relative to basePath
+// Parses sync paths separated by line breaks or commas into paths relative to basePath
 // without leading and trailing slashes; "" stands for basePath itself.
 // Returns { paths: [...] } or { error: "..." }.
 function parseSyncPaths(raw, basePath) {
     var base = String(basePath).replace(/\/+$/, ""),
-        items = String(raw).split(","),
+        items = String(raw).split(/[,\r\n]+/),
         paths = [],
         seen = {},
         p, a, b, i, j;

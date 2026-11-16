@@ -17,7 +17,14 @@ One of two initial options can be selected:
 
 Sync paths and delay (in sec) parameters can be selected for both options and two optional parameters for second option: IP address of any node from second environment and random password which will use to access to both environments.
 
-Sync paths accept one or several comma-separated directories relative to the webroot for application servers or to `/data` for storage nodes, for example `ROOT/uploads, ROOT/media`. An empty value synchronizes the whole webroot (or `/data`). The paths must not be nested in each other. Every path gets its own rsync module: `syncmodule` for the first one, `syncmodule_2`, `syncmodule_3` and so on for the next ones. For two environments synchronization, specify the same paths in the same order in both environments.
+Sync paths accept one or several directories, one per line, relative to the webroot for application servers or to `/data` for storage nodes, for example:
+
+```
+ROOT/uploads
+ROOT/media
+```
+
+An empty value synchronizes the whole webroot (or `/data`). The paths must not be nested in each other. Every path gets its own rsync module: `syncmodule` for the first one, `syncmodule_2`, `syncmodule_3` and so on for the next ones. For two environments synchronization, specify the same paths in the same order in both environments.
 	
 For more information on what File Synchronization Add-on can be used for, follow the [Lsyncd](https://docs.jelastic.com/file-synchronization) reference.
 

@@ -49,10 +49,11 @@ settings:
     name: optional
     showIf:
       one_env:
-      - placeholder: comma-separated, relative to ${WEBROOT} for cp layer or /data for storage
-        name: path
+      - placeholder: One path per line, relative to the webroot for cp layer or /data for storage. Empty to sync the whole directory.
+        name: paths
         caption: Sync paths
-        type: string
+        type: text
+        height: 60
         required: false
       - default: '10'
         name: delay
@@ -60,10 +61,11 @@ settings:
         type: string
         required: false
       two_envs:
-      - placeholder: comma-separated, relative to ${WEBROOT} for cp layer or /data for storage
-        name: path
+      - placeholder: One path per line, relative to the webroot for cp layer or /data for storage. Empty to sync the whole directory.
+        name: paths
         caption: Sync paths
-        type: string
+        type: text
+        height: 60
         required: false
       - default: '10'
         name: delay
@@ -115,6 +117,8 @@ actions:
   - script: scripts/firewallRules.js
     param: install
   - script: scripts/installRsyncDaemon.js
+    params:
+      syncPaths: ${settings.paths}
   installLsync:
   - cmd [${this.nodeId}]: |-
       grep -a 'AlmaLinux' /etc/system-release && microdnf -y install lsyncd || yum install lsyncd -y;
